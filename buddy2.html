@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BUDDY</title>
+<style>
+:root{--bg:#000;--c:#0e0e11;--c2:#1a1a1f;--t:#f4f4f5;--m:#8b8b95;--a:#3b82f6;--l:#25252b;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--t);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:auto;position:relative}
+.top{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--l)}
+.logo{font-size:26px;font-weight:900;letter-spacing:-1px}.sp{flex:1}
+.pill{border:1px solid var(--l);border-radius:24px;padding:7px 14px;font-weight:700;background:var(--c)}
+button{background:var(--c2);color:var(--t);border:1px solid var(--l);border-radius:20px;padding:7px 13px;font:inherit;cursor:pointer}
+button.p{background:var(--a);border-color:var(--a)}button.i{border:0;background:none;font-size:22px;padding:4px 8px}
+.main{flex:1;overflow-y:auto}
+.nav{display:flex;align-items:center;border-top:1px solid var(--l);background:#000}.nav button{flex:1;border:0;border-radius:0;background:none;font-size:22px;padding:12px;color:var(--m)}.nav button.on{color:var(--t)}
+.nav .plus{flex:none;width:58px;height:58px;border-radius:50%;background:var(--a);color:#fff;font-size:32px;padding:0;margin:-18px 8px 4px}
+.st{display:flex;gap:12px;padding:12px;overflow-x:auto;border-bottom:1px solid var(--l)}.st>div{text-align:center;font-size:12px;flex:none;width:62px;cursor:pointer}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;background:var(--c2);overflow:hidden}.av img{width:100%;height:100%;object-fit:cover}
+.ring{padding:2px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6);display:inline-block}
+.post{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--l)}
+.pb{flex:1;min-width:0}.h{color:var(--m);font-size:13px}.h b{color:var(--t);font-size:15px}
+.pi{width:100%;border-radius:16px;margin-top:8px;border:1px solid var(--l);max-height:420px;object-fit:cover}
+.act{display:flex;gap:22px;color:var(--m);font-size:13px;margin-top:8px}
+.cm{background:var(--c);border-radius:12px;padding:7px 10px;margin-top:6px;font-size:14px}
+textarea,input,select{width:100%;background:var(--c);color:var(--t);border:1px solid var(--l);border-radius:12px;padding:10px;font:inherit}
+textarea{resize:vertical;min-height:72px}
+.box{padding:12px;border-bottom:1px solid var(--l)}.box h4{margin:0 0 6px}
+.tag{display:inline-block;background:var(--c2);border-radius:14px;padding:3px 10px;margin:2px;font-size:13px;color:#7db4ff}
+.gos{border-left:3px solid #e11d48;padding-left:8px;margin:6px 0;font-size:14px}
+.row{display:flex;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--l);cursor:pointer}
+#msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:85%;padding:9px 13px;border-radius:18px;background:var(--c2);align-self:flex-start}
+.m.u{align-self:flex-end;background:#7f1d2d}.m i{color:#b9b9c2}.m b{font-weight:600}.m img{max-width:100%;border-radius:12px;display:block;margin-bottom:6px}
+.bar{display:flex;gap:8px;padding:10px;border-top:1px solid var(--l)}
+.tools{display:flex;gap:8px;padding:8px 10px;overflow-x:auto;border-top:1px solid var(--l)}.tools button{flex:none;font-size:13px}
+#sheet{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;justify-content:center;z-index:9}
+#sheet>div{background:#101013;width:100%;max-width:560px;max-height:88%;overflow:auto;border-radius:24px 24px 0 0;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+.it{display:flex;gap:14px;align-items:center;padding:14px 4px;font-size:19px;font-weight:700;cursor:pointer}
+.ph{border-radius:14px;padding:14px;margin:8px 0;background:var(--c2)}.ph img{width:100%;border-radius:10px}.ph .e{font-size:34px}
+.lb{font-size:12px;color:var(--m);margin:10px 0 3px;display:block}
+.tabs{display:flex;border-bottom:1px solid var(--l)}.tabs div{flex:1;text-align:center;padding:12px;color:var(--m);font-weight:700;cursor:pointer}.tabs .on{color:var(--t);border-bottom:3px solid var(--a)}
+#toast{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:#e11d48;padding:8px 14px;border-radius:14px;display:none;z-index:10;max-width:90%}
+</style></head><body>
+<div id="app"></div><div id="sheet" onclick="if(event.target==this)closeM()"><div id="mb"></div></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const fmt=s=>esc(s).replace(/\*(.+?)\*/g,'<i>$1</i>').replace(/(?:"|“)(.+?)(?:"|”)/g,'<b>“$1”</b>').replace(/\n/g,'<br>');
+const rid=()=>Math.random().toString(36).slice(2,9),K=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':n;
+const def=()=>({key:'',model:'gemini-2.5-flash',auto:true,day:1,me:{name:'Yuna',handle:'yunalee',bio:'Estudante de Artes 🖤',emoji:'🎨',img:''},money:1000,tab:'home',cur:null,pt:'Posts',tools:false,
+chars:[
+{id:'haru',name:'Haru',handle:'haru.kim',emoji:'🎸',bio:'Músico. Rival.',persona:'Rival universitário, 22 anos, músico arrogante e charmoso, esconde que se importa. Fala pouco, provoca, ciumento.',scenario:'Faculdade de artes em Seul. Você e o usuário são rivais desde o primeiro ano.',first:'*Esbarro em você no corredor da biblioteca e seguro seus livros antes que caiam.* "Você precisa olhar por onde anda."'},
+{id:'sora',name:'Sora',handle:'sora_ofc',emoji:'🌸',bio:'Fofoqueira oficial ✨',persona:'Melhor amiga fofoqueira e dramática, 21 anos, ama shippar todo mundo, gírias e emojis.',scenario:'Mesma faculdade, divide o apartamento com o usuário.',first:'"AMIGA. Você NÃO vai acreditar no que eu vi hoje na biblioteca!" *pulo na sua cama com o celular na mão.*'},
+{id:'dante',name:'Dante',handle:'dante.noir',emoji:'🖤',bio:'sem paciência',persona:'Colega de curso rebelde e sarcástico, 24 anos, tatuado, sarcasmo ácido, palavrões, lealdade silenciosa.',scenario:'Mesma turma de artes, frequenta festas clandestinas.',first:'*Encosto na parede ao lado da sua sala, braços cruzados.* "Que cara é essa? Foi o Haru de novo?"'}],
+chats:{},posts:[],trends:[],gossip:[],log:[],stores:[],stories:{}});
+let S;try{S=Object.assign(def(),JSON.parse(localStorage.getItem('buddy2')))}catch(e){S=def()}
+const save=()=>{try{localStorage.setItem('buddy2',JSON.stringify(S))}catch(e){toast('Memória cheia: apague fotos antigas')}};
+const ch=id=>S.chars.find(c=>c.id==id);
+const cd=id=>S.chats[id]||(S.chats[id]={msgs:[],diary:[],bank:[],peek:null,gal:null,unread:0,dn:0});
+const A=(x,s=40)=>`<div class="av" style="width:${s}px;height:${s}px;font-size:${s/2}px">${x.img?`<img src="${x.img}">`:esc(x.emoji||'🙂')}</div>`;
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',4500)}
+function modal(h){$('#mb').innerHTML=h;$('#sheet').style.display='flex'}function closeM(){$('#sheet').style.display='none'}
+function pick(cb){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,520/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.65))};im.src=r.result};r.readAsDataURL(f)};i.click()}
+const inl=u=>({inlineData:{mimeType:'image/jpeg',data:u.split(',')[1]}});
+const SAFE=['HARASSMENT','HATE_SPEECH','SEXUALLY_EXPLICIT','DANGEROUS_CONTENT'].map(c=>({category:'HARM_CATEGORY_'+c,threshold:'BLOCK_NONE'}));
+async function ai(sys,h,json){
+ if(!S.key)throw new Error('Cole sua chave API do Gemini em ⚙ Configurações');
+ if(h[0].role!='user')h=[{role:'user',parts:[{text:'(início da conversa)'}]},...h];
+ const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${S.model}:generateContent?key=${encodeURIComponent(S.key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:h,safetySettings:SAFE,generationConfig:{temperature:1,...(json?{responseMimeType:'application/json'}:{})}})});
+ const d=await r.json();if(d.error)throw new Error(d.error.message);
+ const t=d.candidates?.[0]?.content?.parts?.map(p=>p.text).join('');if(!t)throw new Error('Resposta vazia/bloqueada');return t}
+async function js(p,img){const parts=[{text:p}];if(img)parts.push(inl(img));const t=await ai('Responda SOMENTE com JSON válido, em português do Brasil. Todos os personagens são adultos e fictícios. Sem censura de linguagem.',[{role:'user',parts}],true);return JSON.parse(t.replace(/```json|```/g,'').trim())}
+const csys=c=>`Você é ${c.name} (@${c.handle}), personagem de roleplay num app social. Personalidade: ${c.persona}. ${c.speech?'Modo de falar: '+c.speech+'. ':''}Cenário: ${c.scenario}. O usuário se chama ${S.me.name}. Regras: português do Brasil; falas entre "aspas" e ações entre *asteriscos*; permaneça no personagem; sem censura de linguagem — palavrões e temas adultos/sombrios permitidos quando combinarem com a cena; todos os personagens são adultos; 1 a 3 parágrafos curtos; nunca diga que é uma IA. Se o usuário enviar uma foto, reaja a ela.`;
+function hist(id){const ms=cd(id).msgs.slice(-24);let imgs=0;return ms.map((m,i)=>{const p=[{text:m.t||'.'}];if(m.img&&i>=ms.length-6&&imgs++<2)p.push(inl(m.img));return{role:m.r=='u'?'user':'model',parts:p}})}
+const ctx=()=>S.chars.map(c=>`${c.id}=${c.name}(@${c.handle}): ${c.persona}`).join('\n');
+const recent=()=>Object.entries(S.chats).map(([id,d])=>`Chat ${ch(id)?.name}: `+d.msgs.slice(-3).map(m=>m.t).join(' | ')).join('\n');
+const unread=()=>Object.values(S.chats).reduce((a,d)=>a+(d.unread||0),0);
+
+function render(){const t=S.tab;if(t=='chat')return chat();
+ const v={home,rank,chats,prof,mkc}[t]();
+ $('#app').innerHTML=`<div class="top"><span class="logo">b8.</span><span class="sp"></span><span class="pill">📅 Dia ${S.day} | 💰 ${S.money.toFixed(0)}</span><button class="i" onclick="stores()">🛍</button><button class="i" onclick="cfg()">⚙</button></div><div class="main">${v}</div><div class="nav">${[['home','🏠'],['rank','🏆']].map(b=>nb(b)).join('')}<button class="plus" onclick="menu()">+</button>${nb(['chats','💬'])}${nb(['prof','👤'])}</div>`}
+const nb=([k,i])=>`<button class="${S.tab==k?'on':''}" onclick="go('${k}')">${i}${k=='chats'&&unread()?'<sup style="color:#f43">●</sup>':''}</button>`;
+function go(t){S.tab=t;render()}
+function pcard(p){const c=ch(p.by),a=c||(p.page?{name:p.page,handle:p.page.toLowerCase().replace(/\W/g,''),emoji:'📰'}:S.me);
+ return `<div class="post">${A(a)}<div class="pb"><div class="h"><b>${esc(a.name)}</b> ${c||p.page?'✔ ':''}@${esc(a.handle)} · ${p.dy?'dia '+p.dy:'agora'}</div>${fmt(p.text)}${p.img?`<img class="pi" src="${p.img}">`:''}<div class="act"><span>💬 ${p.cm.length}</span><span>🔁 ${p.sh.length}</span><span>❤ ${K(p.lk)}</span><span>📊 ${K(p.lk*23+9)}</span></div>${p.sh.map(n=>`<div class="h">🔁 ${esc(n)} compartilhou</div>`).join('')}${p.cm.map(c=>`<div class="cm"><b>${esc(c.a)}</b> ${fmt(c.t)}</div>`).join('')}</div></div>`}
+function home(){return `<div class="st"><div onclick="newStory()"><div class="ring" style="background:#333">${A(S.me,56)}</div><br>Seu story</div>${S.chars.map(c=>`<div onclick="story('${c.id}')"><div class="ring">${A(c,56)}</div><br>${esc(c.name)}</div>`).join('')}</div>
+${S.trends.length?`<div class="box"><h4>🔥 Trending</h4>${S.trends.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div>`:''}
+${S.gossip.length?`<div class="box"><h4>👀 Fofocas</h4>${S.gossip.map(g=>`<div class="gos"><b>${esc(g.page)}</b> ✔<br>${fmt(g.text)}</div>`).join('')}</div>`:''}
+<div class="box"><button onclick="trends()">🔥 Atualizar trends</button> <button onclick="gossip()">👀 Fofocas</button></div>
+${S.posts.map(pcard).join('')||'<p class="h" style="padding:16px">Toque no + para postar. Os personagens vão reagir.</p>'}`}
+function menu(){modal(`<h2 style="margin:0 0 6px">Criar</h2>${[['✏️','Postar','newPost()'],['🔴','Iniciar live',"ask('live','Título da live')"],['📱','Celular','phone()'],['🏬','Rede de Lojas','stores()'],['🎰','Casa de Apostas','bet()'],['📯','Evento',"ask('evento','Descreva o evento (festa, escândalo, briga...)')"],['⏩','Salto no Tempo','jump()'],['⚖️','Tribunal',"ask('tribunal','Descreva o caso e quem está sendo julgado')"],['🧑‍🎤','Criar personagem',"S.tab='mkc';closeM();render()"]].map(([e,n,f])=>`<div class="it" onclick="closeM();${f}">${e} ${n}</div>`).join('')}`)}
+function newPost(){S.pimg='';modal(`<h3>Postar</h3><textarea id="np" placeholder="O que está acontecendo?"></textarea><div id="pv"></div><br><button onclick="pick(u=>{S.pimg=u;$('#pv').innerHTML='<img class=pi src='+u+'>'})">📷 Foto</button> <button class="p" onclick="post()">Publicar</button>`)}
+async function post(){const t=$('#np').value.trim(),img=S.pimg;if(!t&&!img)return;closeM();const p={id:rid(),by:null,text:t,img,dy:S.day,cm:[],sh:[],lk:0};S.posts.unshift(p);save();render();toast('Personagens estão vendo...');
+ try{const r=await js(`Personagens:\n${ctx()}\n${S.me.name} postou: "${t}"${img?' (com a foto anexada)':''}\nGere 3 a 5 reações de personagens diferentes e talvez 1 de página de fofoca. Formato: [{"id":"idPersonagem ou null","page":"nome da página ou null","type":"comment"|"share","text":""}]. IDs: ${S.chars.map(c=>c.id).join(',')}`,img);
+ r.forEach(x=>{const c=ch(x.id),n=c?c.name:x.page;if(!n)return;p.lk+=Math.floor(Math.random()*400)+20;if(x.type=='share')p.sh.push(n);p.cm.push({a:n,t:x.text})});save();render()}catch(e){toast(e.message)}}
+function ask(k,ph){S.k=k;modal(`<h3>${ph}</h3><textarea id="ak"></textarea><br><br><button class="p" onclick="run(S.k,$('#ak').value)">Começar</button>`)}
+const PR={live:d=>`${S.me.name} iniciou uma LIVE: "${d}". Gere comentários ao vivo de personagens e espectadores anônimos, com doações.`,evento:d=>`Acontece um evento: ${d}. Gere as reações e fofocas.`,tribunal:d=>`Tribunal do campus: ${d}. Gere acusação, defesa, testemunhas e veredito.`,salto:d=>`Passaram-se ${d} dias. Gere o que aconteceu na lore: novos conflitos, romances, fofocas.`};
+async function run(k,d){if(!d.trim()&&k!='salto')return;modal('<p>⏳ Gerando...</p>');
+ try{const r=await js(`Mundo:\n${ctx()}\nUsuária: ${S.me.name}. Dia ${S.day}.\nContexto recente:\n${recent()}\nAção: ${PR[k](d)}\nFormato: {"titulo":"","narrativa":"2-4 frases","posts":[{"id":"idPersonagem ou null","page":"nome de página/conta ou null","text":""}]} com 3 a 5 posts. IDs: ${S.chars.map(c=>c.id).join(',')}`);
+ (r.posts||[]).reverse().forEach(x=>S.posts.unshift({id:rid(),by:ch(x.id)?x.id:null,page:ch(x.id)?null:(x.page||'BuddyFofoca'),text:x.text,dy:S.day,cm:[],sh:[],lk:Math.floor(Math.random()*9e3)}));
+ S.log.unshift({d:S.day,t:`${r.titulo}: ${r.narrativa}`});save();modal(`<h3>${esc(r.titulo)}</h3><p>${fmt(r.narrativa)}</p><p class="h">Os posts foram para o feed.</p><button class="p" onclick="closeM();go('home')">Ver feed</button>`)}catch(e){closeM();toast(e.message)}}
+function jump(){modal(`<h3>⏩ Salto no Tempo</h3><span class="lb">Quantos dias?</span><input id="jd" type="number" value="7"><p class="h">Suas lojas rendem R$150/dia cada.</p><button class="p" onclick="doJump()">Saltar</button>`)}
+function doJump(){const n=Math.max(1,Math.min(60,parseInt($('#jd').value)||1));S.day+=n;S.money+=S.stores.length*150*n;save();run('salto',n)}
+function stores(){modal(`<h3>🏬 Rede de Lojas</h3>${S.stores.map(s=>`<div class="ph">🏪 ${esc(s.name)} <span class="h">+R$150/dia</span></div>`).join('')||'<p class="h">Nenhuma loja ainda.</p>'}<span class="lb">Abrir nova loja (R$500)</span><input id="sn" placeholder="Nome da loja"><br><br><button class="p" onclick="addStore()">Abrir</button>`)}
+function addStore(){const n=$('#sn').value.trim();if(!n)return;if(S.money<500)return toast('Dinheiro insuficiente');S.money-=500;S.stores.push({name:n});S.log.unshift({d:S.day,t:'Abriu a loja '+n});save();stores();render()}
+function bet(){modal(`<h3>🎰 Casa de Apostas</h3><p class="h">Chance de 45% de dobrar o valor.</p><input id="bv" type="number" placeholder="Valor"><br><br><button class="p" onclick="doBet()">Apostar</button><div id="br"></div>`)}
+function doBet(){const v=parseFloat($('#bv').value);if(!(v>0)||v>S.money)return toast('Valor inválido');const w=Math.random()<.45;S.money+=w?v:-v;save();render();bet();$('#br').innerHTML=`<h3>${w?'🎉 Ganhou +':'💀 Perdeu -'}R$ ${v.toFixed(2)}</h3>`}
+function phone(){modal(`<h3>📱 Celular de quem?</h3>${S.chars.map(c=>`<div class="it" onclick="S.cur='${c.id}';tool('peek')">${A(c,36)} ${esc(c.name)}</div>`).join('')}`)}
+async function story(id){const c=ch(id),k=id+S.day;modal('<p>⏳</p>');try{if(!S.stories[k])S.stories[k]=await js(`Personagem ${c.name}: ${c.persona}. Crie o story de hoje (dia ${S.day}). Formato: {"emoji":"📸","cena":"descrição visual","legenda":"texto curto"}`);save();const s=S.stories[k];modal(`<div class="ph"><div class="e">${esc(s.emoji)}</div><b>${esc(c.name)}</b><br>${fmt(s.cena)}<p>${fmt(s.legenda)}</p></div>`)}catch(e){closeM();toast(e.message)}}
+function newStory(){pick(u=>{S.posts.unshift({id:rid(),by:null,text:'📸 Story do dia',img:u,dy:S.day,cm:[],sh:[],lk:0});save();render()})}
+async function trends(){toast('Gerando...');try{S.trends=await js(`Contexto:\n${ctx()}\n${recent()}\nGere 6 trend topics (hashtags) no estilo Twitter sobre a lore e a faculdade. Formato: ["#..."]`);save();render()}catch(e){toast(e.message)}}
+async function gossip(){toast('Fofoqueiros trabalhando...');try{S.gossip=await js(`Personagens:\n${ctx()}\nPosts: ${S.posts.slice(0,3).map(p=>p.text).join(' | ')}\n${recent()}\nCrie 3 posts de páginas de fofoca (BuddyFofoca, CampusTea, DramaSeul) sobre os acontecimentos de ${S.me.name} e dos personagens. Formato: [{"page":"...","text":"..."}]`);save();render()}catch(e){toast(e.message)}}
+function rank(){const l=[...S.chars.map(c=>({...c,f:c.f||(c.f=Math.floor(Math.random()*9e5)+1e4)})),{...S.me,name:S.me.name+' (você)',f:666+S.posts.length*2000}].sort((a,b)=>b.f-a.f);return `<div class="box"><h3>🏆 Ranking de fama</h3></div>${l.map((c,i)=>`<div class="row"><b style="width:24px">${i+1}</b>${A(c,42)}<div style="flex:1"><b>${esc(c.name)}</b><div class="h">@${esc(c.handle)}</div></div><b>${K(c.f)}</b></div>`).join('')}`}
+function chats(){return `<div class="box"><h3 style="margin:0">Mensagens</h3><div class="h">Converse com seus personagens</div><br><button onclick="go('mkc')">+ Criar personagem</button></div>`+S.chars.map(c=>{const d=cd(c.id),l=d.msgs[d.msgs.length-1];return `<div class="row" onclick="open_('${c.id}')">${A(c,50)}<div style="flex:1;min-width:0"><b>${esc(c.name)}</b>${d.unread?` <span class="tag">${d.unread} nova</span>`:''}<div class="h" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l?l.t:'Comece a conversa')}</div></div></div>`}).join('')}
+function open_(id){S.cur=id;const d=cd(id);d.unread=0;if(!d.msgs.length){const c=ch(id);d.msgs.push({r:'m',t:c.first||'*Olha para você.* "Oi."'})}S.tab='chat';save();render()}
+function chat(){const c=ch(S.cur),d=cd(c.id),n=d.msgs.length;$('#app').innerHTML=`<div class="top"><button class="i" onclick="back()">‹</button>${A(c,36)}<b>${esc(c.name)}</b><span class="sp"></span><button class="i" onclick="tool('diary')">📔</button></div>
+<div id="msgs">${d.msgs.map(m=>`<div class="m ${m.r}">${m.img?`<img src="${m.img}">`:''}${fmt(m.t)}</div>`).join('')}${S.typing?'<div class="m"><i>digitando...</i></div>':''}${n&&d.msgs[n-1].r=='m'&&!S.typing?'<div style="display:flex;justify-content:space-between"><button class="i" onclick="regen()">↻</button><button class="i" onclick="cont()">⏭</button></div>':''}</div>
+${S.tools?`<div class="tools"><button onclick="sendImg()">🖼 Enviar imagem</button><button onclick="tool('bank')">💸 Transferir</button><button onclick="tool('bank')">👛 Carteira</button><button onclick="tool('peek')">📱 Celular</button><button onclick="tool('gal')">🗂 Galeria</button></div>`:''}
+<div class="bar"><button class="i" onclick="S.tools=!S.tools;chat()">⊕</button><input id="inp" placeholder='Mensagem... "fala" *ação*' onkeydown="if(event.key=='Enter')send()"><button class="p" onclick="send()">➤</button></div>`;const m=$('#msgs');m.scrollTop=m.scrollHeight}
+async function genDiary(id){const d=cd(id);d.dn=d.msgs.length;const t=await ai(csys(ch(id))+' Escreva uma entrada de diário íntima em 1ª pessoa (máx 6 linhas) sobre sua relação com '+S.me.name+'.',[...hist(id),{role:'user',parts:[{text:'(escreva seu diário)'}]}]);d.diary.unshift({d:'Dia '+S.day,t});save()}
+async function back(){const id=S.cur,d=cd(id);S.tab='chats';render();if(d.msgs.length-d.dn>=6&&S.key)try{await genDiary(id)}catch(e){}}
+async function reply(extra){const id=S.cur,d=cd(id);S.typing=true;chat();try{const h=hist(id);if(extra)h.push({role:'user',parts:[{text:extra}]});d.msgs.push({r:'m',t:await ai(csys(ch(id)),h)})}catch(e){toast(e.message)}S.typing=false;save();if(S.cur==id&&S.tab=='chat')chat()}
+function send(t,img){const i=$('#inp');t=(typeof t=='string'?t:i.value).trim();if(!t&&!img)return;cd(S.cur).msgs.push({r:'u',t:t||'*envia uma foto*',img});save();reply()}
+function sendImg(){pick(u=>send('',u))}
+function regen(){const d=cd(S.cur);while(d.msgs.length&&d.msgs[d.msgs.length-1].r=='m')d.msgs.pop();reply()}
+function cont(){reply('(continue a cena, avançando a história)')}
+async function tool(k){const id=S.cur,c=ch(id),d=cd(id);
+ if(k=='diary'){const dv=()=>modal(`<h3>📔 Diário de ${esc(c.name)}</h3>${d.diary.map(e=>`<div class="ph"><span class="h">${e.d}</span><br>${fmt(e.t)}</div>`).join('')||'<p class="h">Escrito depois das conversas.</p>'}<button onclick="toast('Escrevendo...');genDiary('${id}').then(()=>tool('diary')).catch(e=>toast(e.message))">Escrever agora</button>`);return dv()}
+ if(k=='bank')return modal(`<h3>🏦 Banco</h3><p>Seu saldo: <b>R$ ${S.money.toFixed(2)}</b><br>Saldo de ${esc(c.name)}: <b>R$ ${d.bank.reduce((a,b)=>a+b.v,0).toFixed(2)}</b></p><input id="amt" type="number" placeholder="Valor"><br><br><button class="p" onclick="xfer()">Transferir</button><h4>Extrato</h4>${d.bank.map(b=>`<div class="h">Dia ${b.d} — R$ ${b.v.toFixed(2)}</div>`).join('')||'<p class="h">Sem movimentações.</p>'}`);
+ if(k=='gal'&&d.gal){return galv()}
+ modal('<p>⏳ Carregando...</p>');
+ try{if(k=='peek'){if(!d.peek)d.peek=await js(`Personagem: ${c.name}. ${c.persona}\nOutros:\n${ctx()}\nGere 3 conversas privadas recentes de ${c.name} com outras pessoas (segredos, ciúmes, fofocas sobre ${S.me.name}). Formato: [{"with":"nome","msgs":["Nome: texto"]}]`);save();modal(`<h3>👀 Celular de ${esc(c.name)}</h3>${d.peek.map(x=>`<div class="ph"><b>com ${esc(x.with)}</b><br>${x.msgs.map(m=>`<div>${fmt(m)}</div>`).join('')}</div>`).join('')}<button onclick="cd('${id}').peek=null;tool('peek')">Atualizar</button>`)}
+ else{d.gal=await js(`Personagem: ${c.name}. ${c.persona}\nGere 4 fotos da galeria do celular de ${c.name}. Formato: [{"emoji":"📸","desc":"descrição","legenda":"nota curta"}]`);save();galv()}}catch(e){closeM();toast(e.message)}}
+function galv(){const d=cd(S.cur),c=ch(S.cur);modal(`<h3>🗂 Galeria de ${esc(c.name)}</h3>${d.gal.map(g=>`<div class="ph">${g.img?`<img src="${g.img}">`:`<div class="e">${esc(g.emoji)}</div>`}${fmt(g.desc)}<div class="h">${fmt(g.legenda||'')}</div></div>`).join('')}<button onclick="pick(u=>{cd(S.cur).gal.push({img:u,desc:'Foto adicionada',legenda:''});save();galv()})">+ Adicionar foto</button>`)}
+function xfer(){const v=parseFloat($('#amt').value);if(!(v>0)||v>S.money)return toast('Valor inválido ou saldo insuficiente');const d=cd(S.cur);S.money-=v;d.bank.unshift({d:S.day,v});save();closeM();send(`*transfiro R$ ${v.toFixed(2)} para você pelo banco*`)}
+function mkc(){S.nimg='';return `<div class="box"><h3>Criar personagem</h3><button onclick="pick(u=>{S.nimg=u;$('#cp').innerHTML='<img class=pi style=max-width:120px src='+u+'>'})">📷 Foto do personagem</button><div id="cp"></div>${[['n','Nome',1],['e','Emoji (se não tiver foto)',1],['b','Bio pública',1],['p','Personalidade, história e lore',0],['k','Modo de falar',0],['s','Cenário',0],['f','Primeira mensagem ("fala" e *ação*)',0]].map(([k,l,i])=>`<span class="lb">${l}</span>${i?`<input id="c_${k}">`:`<textarea id="c_${k}"></textarea>`}`).join('')}<br><br><button class="p" onclick="mk()">Criar</button></div>`}
+function mk(){const g=k=>$('#c_'+k).value.trim();if(!g('n')||!g('p'))return toast('Nome e personalidade são obrigatórios');S.chars.push({id:rid(),name:g('n'),handle:g('n').toLowerCase().replace(/\W/g,''),emoji:g('e')||'✨',img:S.nimg,bio:g('b'),persona:g('p'),speech:g('k'),scenario:g('s'),first:g('f')});save();toast('Personagem criado!');go('chats')}
+function prof(){const m=S.me,l={Posts:S.posts.filter(p=>!p.by&&!p.page).map(pcard).join(''),Rede:S.chars.map(c=>`<div class="row">${A(c,42)}<div><b>${esc(c.name)}</b><div class="h">@${esc(c.handle)} · ${esc(c.bio||'')}</div></div></div>`).join(''),'Histórico':S.log.map(e=>`<div class="box"><span class="h">Dia ${e.d}</span><br>${fmt(e.t)}</div>`).join('')||'<p class="h" style="padding:16px">Nada ainda.</p>'};
+ return `<div style="padding:16px;display:flex;justify-content:space-between;align-items:center"><div><h2 style="margin:0">${esc(m.name)} <span style="color:var(--a)">✔</span></h2><div class="h">@${esc(m.handle)}</div><p><b>${S.chars.length}</b> <span class="h">Seguindo</span> &nbsp; <b>${K(666+S.posts.length*2000)}</b> <span class="h">Seguidores</span></p></div><div onclick="pick(u=>{S.me.img=u;save();render()})">${A(m,86)}</div></div><div style="padding:0 16px 12px">${fmt(m.bio)} <button onclick="editMe()">Editar</button></div>
+<div class="tabs">${['Posts','Rede','Histórico'].map(t=>`<div class="${S.pt==t?'on':''}" onclick="S.pt='${t}';render()">${t}</div>`).join('')}</div>${l[S.pt]}`}
+function editMe(){modal(`<h3>Editar perfil</h3><span class="lb">Nome</span><input id="en" value="${esc(S.me.name)}"><span class="lb">@usuário</span><input id="eh" value="${esc(S.me.handle)}"><span class="lb">Bio</span><textarea id="eb">${esc(S.me.bio)}</textarea><br><br><button class="p" onclick="S.me.name=$('#en').value||'Eu';S.me.handle=$('#eh').value;S.me.bio=$('#eb').value;save();closeM();render()">Salvar</button>`)}
+function cfg(){modal(`<h3>⚙ Configurações</h3><span class="lb">Chave API do Gemini (fica só neste aparelho)</span><input id="pk" type="password" value="${esc(S.key)}" placeholder="Cole sua chave aqui"><span class="lb">Modelo</span><input id="pm" value="${esc(S.model)}"><br><br><label><input type="checkbox" id="pa" style="width:auto" ${S.auto?'checked':''}> Mensagens e posts autônomos</label><br><br><button class="p" onclick="S.key=$('#pk').value.trim();S.model=$('#pm').value.trim()||'gemini-2.5-flash';S.auto=$('#pa').checked;save();closeM();toast('Salvo!')">Salvar</button> <button onclick="if(confirm('Apagar tudo?')){localStorage.removeItem('buddy2');S=def();closeM();render()}">Resetar tudo</button>`)}
+async function autoMsg(){if(!S.auto||!S.key||S.busy)return;const c=S.chars[Math.floor(Math.random()*S.chars.length)],d=cd(c.id);S.busy=1;
+ try{if(Math.random()<.35){const t=await ai(csys(c)+' Escreva um post curto de rede social (1-2 frases) sobre algo que está acontecendo na sua vida/lore.',[{role:'user',parts:[{text:'(poste algo)'}]}]);S.posts.unshift({id:rid(),by:c.id,text:t,dy:S.day,cm:[],sh:[],lk:Math.floor(Math.random()*5e3)});save();if(S.tab=='home')render()}
+ else if(d.msgs.length&&d.msgs[d.msgs.length-1].r=='u'){const t=await ai(csys(c)+' Envie uma mensagem espontânea e curta, por iniciativa própria, com base na conversa.',[...hist(c.id),{role:'user',parts:[{text:'(o usuário ficou um tempo sem responder; envie algo)'}]}]);d.msgs.push({r:'m',t});if(!(S.tab=='chat'&&S.cur==c.id))d.unread++;save();render();toast('Nova mensagem de '+c.name)}}catch(e){}S.busy=0}
+setInterval(autoMsg,90000);render();
+</script></body></html>
